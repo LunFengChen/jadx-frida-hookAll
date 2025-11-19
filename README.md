@@ -5,33 +5,108 @@
 组合快捷键 `Ctrl+Alt+H` 调出树形结构展示ui，提供复制剪切板和切换语言功能，实用且美观；
 > 对你有用的话给个star吧或者分享一下，感谢哇；
 
+希望有更多人能加入到这个项目中，一起完善 Frida Hook 脚本仓库；欢迎提 issue 或者 pr；
+
+> 当脚本足够多和完善的时候，对于新手或者老手都非常有用呢；
+
 ## 1. 脚本分类
-- Helper Functions（辅助函数）
-    - 打印堆栈
-    - 打印参数
-    - 字节转十六进制
 
-- Hook JDK（JDK Api）
-    - 打印 Map 内容
+插件提供 **7 大分类**，共 **36 个**常用 Frida Hook 脚本：
 
-- Hook Android（Android Api）
-    - 监控 Dialog
+| 分类 | 英文名称 | 中文名称 | 脚本数 | 说明 |
+|------|---------|---------|--------|------|
+| 1️⃣ | **Frida Basics** | Frida基本使用 | 1 | Hook示例和基础用法 |
+| 2️⃣ | **Helper Functions** | 辅助函数 | 7 | 打印堆栈、参数、Map等工具函数 |
+| 3️⃣ | **Hook JDK** | Hook JDK | 11 | 监控String、Base64、File等JDK类 |
+| 4️⃣ | **Hook Android** | Hook Android | 10 | 监控Activity、Dialog、Toast等 |
+| 5️⃣ | **Hook Third-Party** | Hook第三方库 | 2 | 监控OkHttp、JSONObject等 |
+| 6️⃣ | **Hook JNI** | JNI相关 | - | JNI函数和Native方法hook |
+| 7️⃣ | **Frida Advanced** | Frida进阶 | 4 | ClassLoader、动态加载DEX等 |
 
-- Frida Advanced（Frida Api）
-    - JNI RegisterNatives 监控
+<details>
+<summary>📋 点击查看详细脚本列表</summary>
+
+### 1️⃣ Frida Basics（Frida基本使用）
+- Hook示例
+
+### 2️⃣ Helper Functions（辅助函数）
+- 打印调用栈
+- 数据格式转换（字节↔十六进制↔字符串↔Base64）
+- 打印方法参数
+- 打印Map对象
+- 打印字符串数组
+- 打印方法签名
+- 打印自定义对象
+
+### 3️⃣ Hook JDK（Hook JDK）
+- 监控所有Map
+- 监控ArrayList
+- 监控Base64（Android）
+- 监控Base64（Java）
+- 监控Collections
+- 监控File
+- 监控String
+- 监控StringBuilder
+- 监控StringFactory
+- 监控URL
+- 打印Map
+
+### 4️⃣ Hook Android（Hook Android）
+- 阻止弹窗
+- 监控崩溃
+- 监控Activity
+- 监控Dialog
+- 监控EditText
+- 监控Log
+- 监控SharedPreferences
+- 监控TextUtils
+- 监控Toast
+- 监控WebView
+
+### 5️⃣ Hook Third-Party（Hook第三方库）
+- 监控JSONObject
+- 监控OkHttp
+
+### 6️⃣ Hook JNI（JNI相关）
+> 此分类为预留分类，你可以添加JNI相关的hook脚本
+
+### 7️⃣ Frida Advanced（Frida进阶）
+- 主动调用方法
+- ClassLoader辅助
+- Dump证书
+- 动态加载DEX
+
+</details>
 
 
 ## 2. 安装方法
 
-### 方式 1：直接下载安装（推荐）
+### 方式 1：jadx-cli 安装（最简单）
 
-1. 从 [Releases](https://github.com/LunFengChen/jadx-frida-hookAll/releases) 页面下载最新的 `jadx-frida-hookall-x.x.x.jar`
-2. 在 JADX GUI 中：`Plugins` → `Install plugin` → 选择下载的 JAR 文件
+```bash
+# 直接从 GitHub 安装
+jadx plugins --install "github:LunFengChen:jadx-frida-hookAll"
+
+# 或者安装到 jadx-gui（如果已运行 jadx-cli）
+jadx plugins --install-location "github:LunFengChen:jadx-frida-hookAll"
+```
+
+### 方式 2：GUI 安装
+
+**在线安装**：
+1. 打开 JADX GUI → `Preferences` → `Plugins`
+2. 点击 `Install plugin` 按钮
+3. 输入 locationId：`github:LunFengChen:jadx-frida-hookAll`
+4. 重启 JADX
+
+**离线安装**：
+1. 从 [Releases](https://github.com/LunFengChen/jadx-frida-hookAll/releases) 下载 `jadx-frida-hookall-x.x.x.jar`
+2. 在 JADX GUI 中：`Plugins` → `Install plugin` → 选择 JAR 文件
 3. 重启 JADX
 
-### 方式 2：手动编译安装
+### 方式 3：手动编译
 
-如果你想修改插件或贡献代码，请查看 [4. 扩展开发](#4-扩展开发) 章节。
+如果你想修改插件或贡献代码，请查看 [5. 扩展开发](#5-扩展开发) 章节。
 
 > **更新插件**：先卸载旧版本，重启 JADX，再安装新版本。
 
@@ -42,7 +117,7 @@
 
 两种方式：
 - **快捷键**：`Ctrl+Alt+H`
-- **菜单**：`Plugins` → `Frida Hook Templates`
+- **菜单**：`Plugins` → `Frida实用脚本库` (Frida Script Library)
 
 ### 3.2 使用脚本
 
@@ -107,6 +182,8 @@ Java.perform(function() {
     };
 });
 ```
+要求是套上function(){}, 方便复制后快速调用
+
 
 #### 步骤 2：注册脚本
 
@@ -180,17 +257,40 @@ src/main/
     └── frida-advanced/
 ```
 
-### 5.4 贡献方式
+### 5.4 发布新版本
+
+#### 自动发布
+
+本项目使用 GitHub Actions 自动发布，只需推送 tag：
+
+```bash
+# 创建版本 tag
+git tag -a v1.0.1 -m "Release version 1.0.1"
+
+# 推送 tag
+git push origin v1.0.1
+```
+
+GitHub Actions 会自动编译并发布到 Releases，用户可直接通过 jadx-cli 安装：
+
+```bash
+jadx plugins --install "github:LunFengChen:jadx-frida-hookAll"
+```
+
+详细发布流程请查看 [RELEASE.md](RELEASE.md)
+
+### 5.5 贡献方式
 
 - **提交 PR**：https://github.com/LunFengChen/jadx-frida-hookAll
 - **反馈交流**：Q群 686725227
+- **添加脚本**：欢迎提交实用的 Frida Hook 脚本
 
 
 ## 6. 常见问题
 
 **Q: 快捷键不生效？**
 - 确保 JADX 窗口处于激活状态
-- 或使用菜单：`Plugins` → `Frida Hook Templates`
+- 或使用菜单：`Plugins` → `Frida实用脚本库` (Frida Script Library)
 
 **Q: 如何切换语言？**
 - 插件自动跟随 JADX 语言设置

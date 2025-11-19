@@ -17,7 +17,7 @@ import java.awt.event.KeyEvent;
 
 /**
  * JADX Frida Hook All Plugin
- * Provides Frida Hook script templates for JDK, Android APIs and JNI
+ * Provides practical Frida Hook scripts for JDK, Android APIs and JNI
  */
 public class JadxFridaHookAll implements JadxPlugin {
     
@@ -66,7 +66,7 @@ public class JadxFridaHookAll implements JadxPlugin {
     public JadxPluginInfo getPluginInfo() {
         return JadxPluginInfoBuilder.pluginId(PLUGIN_ID)
                 .name("Frida HookAll")
-                .description("Frida Hook script templates for Java/Android reverse engineering.\nCtrl+Alt+H to open.\nAuthor: x1a0f3n9(LunFengChen)\nversion: 1.0.0")
+                .description("Frida Script Library | Frida实用脚本库\nPractical Frida Hook scripts for Java/Android reverse engineering.\nCtrl+Alt+H to open.\nAuthor: x1a0f3n9(LunFengChen)\nversion: 1.0.0")
                 .homepage("https://github.com/LunFengChen/jadx-frida-hookAll")
                 .build();
     }
@@ -110,8 +110,9 @@ public class JadxFridaHookAll implements JadxPlugin {
                 // Find or create Plugins menu
                 JMenu pluginsMenu = findOrCreatePluginsMenu(menuBar);
 
-                // Create Frida HookAll menu item
-                JMenuItem fridaMenuItem = new JMenuItem("Frida Hook Templates");
+                // Create Frida HookAll menu item with bilingual support
+                String menuText = config.isEnglish() ? "Frida Script Library" : "Frida实用脚本库";
+                JMenuItem fridaMenuItem = new JMenuItem(menuText);
                 
                 // Add shortcut Ctrl+Alt+H (H for Hook)
                 fridaMenuItem.setAccelerator(KeyStroke.getKeyStroke(

@@ -54,6 +54,9 @@
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
+                        <manifestEntries>
+                            <Plugin-Version>${project.version}</Plugin-Version>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>

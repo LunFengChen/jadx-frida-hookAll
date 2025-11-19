@@ -1,0 +1,79 @@
+name: Release Plugin
+
+on:
+  push:
+    tags:
+      - 'v*'  # 当推送 v1.0.0 这样的 tag 时触发
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: Get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+    
+    - name: Download JADX GUI JAR
+      run: |
+        mkdir -p lib
+        # 下载最新的 JADX dev 版本
+        wget -O lib/jadx-gui.jar https://github.com/LunFengChen/jadx/releases/latest/download/jadx-gui-dev-all.jar || \
+        wget -O lib/jadx-gui.jar https://github.com/skylot/jadx/releases/latest/download/jadx-gui-dev-all.jar
+    
+    - name: Update version in pom.xml
+      run: |
+        mvn versions:set -DnewVersion=${{ steps.get_version.outputs.VERSION }}
+        mvn versions:commit
+    
+    - name: Build with Maven
+      run: mvn clean package -DskipTests
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: target/jadx-frida-hookall-${{ steps.get_version.outputs.VERSION }}.jar
+        body: |
+          ## Frida HookAll Plugin v${{ steps.get_version.outputs.VERSION }}
+          
+          ### 安装方法
+          
+          **jadx-cli 安装（推荐）：**
+          ```bash
+          jadx plugins --install "github:LunFengChen:jadx-frida-hookAll"
+          ```
+          
+          **jadx-gui 安装：**
+          1. 打开 JADX GUI → Preferences → Plugins
+          2. 点击 Install plugin 按钮
+          3. 输入：`github:LunFengChen:jadx-frida-hookAll`
+          4. 重启 JADX
+          
+          或者下载 JAR 文件手动安装：
+          1. 下载下方的 `jadx-frida-hookall-${{ steps.get_version.outputs.VERSION }}.jar`
+          2. 在 JADX GUI 中：Plugins → Install plugin → 选择 JAR 文件
+          3. 重启 JADX
+          
+          ### 功能特性
+          - 🔧 Helper Functions（辅助函数）
+          - 📦 Hook JDK APIs
+          - 📱 Hook Android APIs
+          - ⚡ Frida Advanced APIs (JNI 监控)
+          - 🌐 中英文界面切换
+          - ⌨️ 快捷键支持（Ctrl+Alt+H）
+          
+          ### 使用方法
+          - 快捷键：`Ctrl+Alt+H`
+          - 菜单：`Plugins` → `Frida实用脚本库` (Frida Script Library)
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
