@@ -173,3 +173,24 @@ function hook_monitor_ArrayList() {
 
 // Execute the hook
 hook_monitor_ArrayList();
+
+/*
+关于 ArrayList 的详解
+
+java.util.ArrayList 是 Java 中最常用的动态数组实现。
+
+核心机制：
+- 内部维护一个 Object[] elementData 数组。
+- 容量不足时自动扩容（通常是 1.5 倍）。
+- 非线程安全（多线程环境下推荐 Collections.synchronizedList 或 CopyOnWriteArrayList）。
+
+逆向价值：
+1. 参数收集：很多 App 在计算签名之前，会把所有参数放到一个 ArrayList 里进行排序或拼接。
+2. 响应解析：服务器返回的列表数据（如商品列表、评论列表）通常会被解析成 ArrayList。
+3. Hook `add` 和 `get` 可以监控到数据的流入和流出。
+
+速记：
+1. 看到 `new ArrayList()`，通常是在准备容器。
+2. 看到 `addAll()`，是在合并数据。
+3. 看到 `toArray()`，是在转数组，可能是为了传给底层 C++ 代码或进行签名计算。
+*/

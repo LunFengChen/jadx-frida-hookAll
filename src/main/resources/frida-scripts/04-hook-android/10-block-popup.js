@@ -80,3 +80,29 @@ Java.perform(function() {
 
     console.log("🎯 Frida弹窗拦截器已激活！");
 });
+
+/*
+关于 弹窗拦截 (Block Popup) 的详解
+
+这是一个功能型脚本，而非监控型脚本。它的目的是为了“清爽”的逆向环境。
+
+原理：
+1. 全局拦截 (WindowManager):
+   - 所有的悬浮窗（Toast, System Alert, Overlay）最终都要通过 `WindowManager.addView` 添加到屏幕。
+   - 通过判断 `params.type` 可以精准识别并拦截系统级弹窗（如“请勿遮挡屏幕”提示）。
+
+2. Dialog 拦截:
+   - 针对应用内的广告弹窗、更新弹窗。
+   - 通过判断 Dialog 类名是否包含 "Ad", "Update" 等关键词进行过滤。
+
+3. Toast 拦截:
+   - 针对烦人的文字提示。
+
+逆向价值：
+- 很多 App 检测到 Frida 或 Root 后，会弹出一个不可取消的 Dialog 强制用户退出。
+- Hook 这里直接 `return`，就能绕过这种“软”保护，强行进入 App。
+
+速记：
+1. 遇到“检测到环境异常，请退出”的弹窗，用这个脚本。
+2. 遇到满屏广告，用这个脚本。
+*/

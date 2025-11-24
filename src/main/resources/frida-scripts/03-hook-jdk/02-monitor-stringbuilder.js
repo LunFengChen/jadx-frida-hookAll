@@ -150,3 +150,26 @@ function hook_monitor_StringBuilder() {
     console.warn(`[*] hook_monitor_StringBuilder is injected!`);
 };
 hook_monitor_StringBuilder();
+
+/*
+关于 StringBuilder/StringBuffer 的详解
+
+Java 中字符串 (String) 是不可变的，频繁拼接会产生大量临时对象，性能极差。
+因此诞生了 StringBuilder (非线程安全，快) 和 StringBuffer (线程安全，慢)。
+
+核心机制：
+- 内部维护一个 char[] 数组。
+- append() 时，直接在数组后面填数据。
+- 容量不够时，扩容 (通常是 2倍 + 2)。
+- toString() 时，才生成最终的 String 对象。
+
+逆向价值：
+1. 所有的 + 号拼接，底层基本都是 StringBuilder。
+2. 在 toString() 处 Hook，可以看到拼接完成的最终结果（例如 拼接好的 URL、JSON、签名明文）。
+3. 比 Hook String 构造函数更高效，因为这里只有最终结果，没有中间产生的无数临时 String。
+
+速记：
+1. 找参数拼装过程？Hook StringBuilder.append。
+2. 找最终结果？Hook StringBuilder.toString。
+3. 两者区别？StringBuilder 没锁，StringBuffer 有锁 (synchronized)。Android 开发 99% 用 StringBuilder。
+*/

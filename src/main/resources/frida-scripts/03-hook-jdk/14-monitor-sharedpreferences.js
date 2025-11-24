@@ -80,3 +80,27 @@ function hook_monitor_SharedPreferences() {
 }
 
 hook_monitor_SharedPreferences();
+
+/*
+关于 SharedPreferences (SP) 的详解
+
+SharedPreferences 是 Android 提供的一种轻量级的数据存储方式，底层基于 XML 文件。
+文件通常存储在 `/data/data/包名/shared_prefs/` 目录下。
+
+逆向价值：
+1. 敏感信息泄露：
+   - 很多开发者的安全意识不足，会把 Token, SessionId, UserID 甚至密码明文存在 SP 里。
+   - Hook `putString` 就像在看 App 的日记本。
+
+2. 功能开关：
+   - 很多 App 的功能开关（如 `is_vip`, `show_ads`, `debug_mode`）是保存在 SP 里的。
+   - Hook `getBoolean` 并修改返回值，是破解会员、去广告最简单的手段之一。
+
+3. 设备指纹：
+   - App 生成的唯一设备 ID (UUID/GUID) 通常会持久化保存在 SP 里，卸载重装后还在。
+
+速记：
+1. 看到 `putString("token", ...)`，恭喜你，拿到 Token 了。
+2. 看到 `getBoolean("is_vip")`，这就是我们要改的地方。
+3. 它的底层实现是 `SharedPreferencesImpl$EditorImpl`，直接 Hook 接口是没用的，必须 Hook 实现类。
+*/

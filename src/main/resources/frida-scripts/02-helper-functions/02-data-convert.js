@@ -141,3 +141,34 @@ function printAllFormats(bytes, dataName) {
 //     console.warn(`[*] hook_monitor_encrypt is injected!`);
 // };
 // hook_monitor_encrypt();
+
+/*
+关于 数据转换 (Data Conversion) 的详解
+
+在逆向过程中，数据的展现形式多种多样。
+最常见的二进制数据载体是 `byte[]` (Java 字节数组)。
+
+转换的必要性：
+1. 人类可读性：
+   - `byte[]` 直接打印是对象地址 `[B@xxxx`，无法阅读。
+   - 需要转成 Hex (十六进制) 或 Base64 以便查看内容。
+   - 如果是文本内容，需要转成 String。
+
+2. 协议分析：
+   - 很多加密算法的输入输出都是 Hex 字符串。
+   - 网络传输常用 Base64。
+
+常见坑：
+1. 乱码：
+   - 如果 `byte[]` 包含非打印字符（如加密后的密文），强制转 String 会显示乱码，甚至丢失数据。
+   - 此时应该优先看 Hex。
+
+2. 编码问题：
+   - 默认通常是 UTF-8。
+   - 但有些老旧系统可能用 GBK，或者 Crypto 库可能用 ISO-8859-1。
+
+速记：
+1. 拿到 `byte[]`，先看 Hex，再试 String。
+2. 看到 "0x..." 或 "A1 B2..." 是 Hex。
+3. 看到 "..." 或 "==" 结尾，是 Base64。
+*/

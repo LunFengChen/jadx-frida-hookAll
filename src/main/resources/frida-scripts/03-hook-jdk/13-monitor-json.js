@@ -88,3 +88,24 @@ function hook_monitor_JSON() {
     console.warn(`[*] hook_monitor_JSON is injected!`);
 }
 hook_monitor_JSON();
+
+/*
+关于 JSON 解析 (JSONObject/JSONArray) 的详解
+
+org.json 是 Android SDK 内置的 JSON 解析库（虽然性能不如 Gson/FastJson，但因为是系统自带，很多 App 都在用）。
+
+逆向价值：
+1. 核心业务数据暴露：
+   - 绝大多数 App 的网络请求和响应都是 JSON 格式。
+   - 如果请求体被加密了，Hook 这里的 `toString()` 或 `put()` 可以看到加密前的明文。
+   - 如果响应体被加密了，Hook 这里的构造函数 `$init(String)` 可以看到解密后的明文。
+
+2. 定位关键逻辑：
+   - 如果你看到代码在 `getString("token")`，顺着调用栈找上去，大概率就是处理登录响应的地方。
+   - 如果你看到代码在 `put("password", ...)`，顺着堆栈找，就是登录请求的组装处。
+
+速记：
+1. 看到 `new JSONObject(str)`，通常是在解析服务器响应（明文）。
+2. 看到 `jsonObject.toString()`，通常是在发送请求前（明文）。
+3. 很多第三方加固/防护 SDK 也会用 JSON 来传输配置，Hook 这里能看到很多有趣的东西。
+*/

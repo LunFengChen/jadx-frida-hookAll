@@ -23,3 +23,22 @@ Java.perform(function() {
     
     console.warn("[*] hook_monitor_Collections is injected");
 });
+
+/*
+关于 Collections 工具类的详解
+
+java.util.Collections 是一个操作 Set、List 和 Map 等集合的工具类。
+
+逆向价值：
+1. sort (排序)：
+   - 很多签名算法要求参数必须按字母序排序 (Dictionary Order)。
+   - App 通常会调用 `Collections.sort(list, comparator)`。
+   - Hook 这里可以看到排序前的乱序参数，以及排序后的有序参数。
+   - 还能看到使用的 Comparator 规则。
+
+2. synchronizedXxx (线程安全包装)：
+   - 如果看到 `Collections.synchronizedMap`，说明这部分逻辑涉及多线程操作，可能比较关键。
+
+速记：
+1. 看到 `Collections.sort`，立刻警觉，这很可能是签名算法的一部分！
+*/

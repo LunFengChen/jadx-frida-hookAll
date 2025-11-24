@@ -138,34 +138,35 @@ function hook_monitor_all_Map() {
         };
         
         // 8. HashMap 构造函数
-        HashMap["$init"].overload().implementation = function() {
-            console.log(`[->] HashMap.$init() is called!`);
-            // showJavaStacks();
-            return this["$init"]();
-        };
+        // 监控这个作用不大
+        // HashMap["$init"].overload().implementation = function() {
+        //     console.log(`[->] HashMap.$init() is called!`);
+        //     // showJavaStacks();
+        //     return this["$init"]();
+        // };
         
-        HashMap["$init"].overload('int').implementation = function(initialCapacity) {
-            console.log(`[->] HashMap.$init(int) is called!`);
-            console.log(`    ->initialCapacity= ${initialCapacity}`);
-            // showJavaStacks();
-            return this["$init"](initialCapacity);
-        };
+        // HashMap["$init"].overload('int').implementation = function(initialCapacity) {
+        //     console.log(`[->] HashMap.$init(int) is called!`);
+        //     console.log(`    ->initialCapacity= ${initialCapacity}`);
+        //     // showJavaStacks();
+        //     return this["$init"](initialCapacity);
+        // };
         
-        HashMap["$init"].overload('int', 'float').implementation = function(initialCapacity, loadFactor) {
-            console.log(`[->] HashMap.$init(int, float) is called!`);
-            console.log(`    ->initialCapacity= ${initialCapacity}`);
-            console.log(`    ->loadFactor= ${loadFactor}`);
-            // showJavaStacks();
-            return this["$init"](initialCapacity, loadFactor);
-        };
+        // HashMap["$init"].overload('int', 'float').implementation = function(initialCapacity, loadFactor) {
+        //     console.log(`[->] HashMap.$init(int, float) is called!`);
+        //     console.log(`    ->initialCapacity= ${initialCapacity}`);
+        //     console.log(`    ->loadFactor= ${loadFactor}`);
+        //     // showJavaStacks();
+        //     return this["$init"](initialCapacity, loadFactor);
+        // };
         
-        HashMap["$init"].overload('java.util.Map').implementation = function(map) {
-            console.log(`[->] HashMap.$init(Map) is called!`);
-            console.log("    ->Source map:");
-            printMapContent(map, "HashMap constructor");
-            showJavaStacks();
-            return this["$init"](map);
-        };
+        // HashMap["$init"].overload('java.util.Map').implementation = function(map) {
+        //     console.log(`[->] HashMap.$init(Map) is called!`);
+        //     console.log("    ->Source map:");
+        //     printMapContent(map, "HashMap constructor");
+        //     showJavaStacks();
+        //     return this["$init"](map);
+        // };
         
         // 9. 其他 Map 实现的构造函数
         // 通常不需要全部监控，因为它们最终会调用 Map 接口的方法，或者我们已经 Hook 了 Map 接口
@@ -179,3 +180,51 @@ function hook_monitor_all_Map() {
 };
 
 hook_monitor_all_Map();
+/* 
+关于Map的详解
+
+Map (接口)
+│
+├── SortedMap (接口) ← 扩展Map，按键排序
+│     │
+│     └── NavigableMap (接口) ← 扩展SortedMap，提供导航方法
+│
+├── ConcurrentMap (接口) ← 扩展Map，线程安全操作
+│
+├── AbstractMap (抽象类) ← 实现Map接口，提供通用实现
+│     │
+│     ├── HashMap ← 基于哈希表，无序，允许null
+│     │    │
+│     │    └── LinkedHashMap ← 保持插入/访问顺序
+│     │
+│     ├── TreeMap ← 实现NavigableMap，基于红黑树有序
+│     │
+│     ├── ConcurrentHashMap ← 实现ConcurrentMap，高并发线程安全
+│     │
+│     ├── WeakHashMap ← 弱引用键，自动垃圾回收
+│     │
+│     ├── EnumMap ← 专为枚举键设计的高性能Map
+│     │
+│     └── IdentityHashMap ← 使用==而不是equals比较键
+│
+└── Hashtable (类) ← 继承Dictionary，实现Map接口
+    │
+    └── Properties ← 配置文件专用，键值都是String
+
+
+开发中常用的：
+
+需求场景	    推荐Map	                                原因
+一般用途	    HashMap	                             性能最好，最通用
+保持插入顺序    LinkedHashMap	                     维护插入顺序
+需要排序	    TreeMap	                             按键自然顺序或自定义顺序排序
+多线程环境	    ConcurrentHashMap	                 高并发性能好
+缓存实现	    WeakHashMap 或 LinkedHashMap	     自动清理或LRU策略
+遗留代码	    Hashtable	                         仅用于维护旧代码
+
+速记：
+1. HashMap正常用
+2. LinkedHashMap拿来做列表用，保存顺序然后再拼接在计算签名
+3. TreeMap天然排序，适合做签名
+4. 其他的都是特定场合用的
+*/

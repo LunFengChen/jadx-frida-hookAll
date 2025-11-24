@@ -34,3 +34,19 @@ function showObjectArray(objArr, name) {
 //     console.warn(`[*] hook_monitor_yourMethod is injected!`);
 // };
 // hook_monitor_yourMethod();
+
+/*
+关于 打印对象数组 (Print Object Array) 的详解
+
+这是 `05-print-stringArray.js` 的通用版。
+专门处理 `Object[]` 类型的数组。
+
+逆向价值：
+- 很多混淆后的代码会用 `Object[]` 来传递一组异构参数。
+- 比如 `doSomething(Object[] args)`，里面可能 args[0] 是 Context，args[1] 是 String，args[2] 是 Map。
+- 用这个脚本可以一次性打印出数组里每个元素的 toString() 结果，快速理清参数含义。
+
+速记：
+1. 遇到 `Object[]`，用这个。
+2. 遇到 `String[]`，用这个也行，用 05 也行。
+*/

@@ -22,12 +22,12 @@ function hook_monitor_android_base64() {
             }
 
             // 限制打印长度
-            let maxLength = 100;
+            // let maxLength = 100;
             let truncated = false;
-            if (byteArray.length > maxLength) {
-                byteArray = byteArray.slice(0, maxLength);
-                truncated = true;
-            }
+            // if (byteArray.length > maxLength) {
+            //     byteArray = byteArray.slice(0, maxLength);
+            //     truncated = true;
+            // }
 
             // 转换为十六进制字符串
             let hexString = "";
@@ -154,3 +154,43 @@ function hook_monitor_android_base64() {
     console.warn(`[*] hook_monitor_android_base64 is injected!`);
 };
 hook_monitor_android_base64();
+
+/*
+关于 Base64 的详解
+
+Base64 是一种基于64个可打印字符来表示二进制数据的表示方法。
+
+核心原理：
+将 3 个字节 (3 * 8 = 24 bits) 的二进制数据，划分为 4 个组 (4 * 6 = 24 bits)。
+每个组 6 bits，值范围 0-63，对应码表中的一个字符。
+如果数据长度不是3的倍数，使用 '=' 进行填充 (Padding)。
+
+标准码表 (RFC 4648)：
+A-Z (26) + a-z (26) + 0-9 (10) + '+' (1) + '/' (1) = 64 个字符
+填充字符：'='
+
+常见变种：
+1. URL Safe Base64:
+   - 将 '+' 替换为 '-' (减号)
+   - 将 '/' 替换为 '_' (下划线)
+   - 目的：避免在 URL 中引起歧义（+变空格，/变路径分隔符）。
+
+2. 自定义码表 (魔改 Base64):
+   - 逆向中非常常见！
+   - 算法逻辑不变，只是打乱了索引表的顺序，或者替换了几个字符。
+   - 识别方法：找到 encode/decode 函数，查看其引用的 64 字节长的字符串常量。
+
+开发中常用的：
+
+需求场景                推荐方案                                原因
+标准传输                Base64.DEFAULT                         最通用
+URL参数                 Base64.URL_SAFE                        防止URL转义问题
+不换行                  Base64.NO_WRAP                         避免长文本自动换行(\n)
+忽略填充                Base64.NO_PADDING                      有些协议不需要等号
+
+速记：
+1. 看到 "==" 或 "=" 结尾的字符串，第一时间怀疑是 Base64。
+2. 看到 "ABCDEFGHIJKLMNOPQRSTUVWXYZ..." 这种字符串，就是 Base64 码表。
+3. 逆向时如果解密失败，检查一下是不是用了 URL Safe 模式 (-_) 或者自定义码表。
+4. new String(bytes) 乱码时，试试 Base64.encodeToString(bytes) 看看能不能看懂。
+*/

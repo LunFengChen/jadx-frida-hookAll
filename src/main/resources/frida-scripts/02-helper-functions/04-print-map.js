@@ -66,3 +66,25 @@ function mapToJson(map) {
 //     console.warn(`[*] hook_monitor_calcSignature is injected!`);
 // };
 // hook_monitor_calcSignature();
+
+/*
+关于 打印 Map (Print Map) 的详解
+
+Map 是 Java 中最常用的键值对容器 (如 HashMap, TreeMap, LinkedHashMap)。
+在逆向分析中，Map 经常用来存储请求参数、配置信息、Header 等。
+
+核心功能：
+1. 遍历打印：
+   - 直接打印 Map 对象通常只能看到 "java.util.HashMap@xxxx"。
+   - 该脚本提供了 `showJavaMap` 函数，可以遍历 Map 的所有 Key 和 Value 并打印出来。
+
+2. 自动处理 byte[]：
+   - 如果 Value 是 byte[] (字节数组)，脚本会自动将其转换为字符串显示，方便查看。
+
+3. Gson 支持 (可选)：
+   - 如果想看更漂亮的 JSON 格式，可以使用 `mapToJson` (需要 r0gson.dex)。
+
+速记：
+1. 看到参数类型是 `java.util.Map`，直接把这个脚本粘过去，用 `showJavaMap(map)` 打印。
+2. 这是分析签名算法（通常涉及参数排序和拼接）的神器。
+*/

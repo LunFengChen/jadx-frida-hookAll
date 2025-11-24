@@ -100,3 +100,25 @@ function showAllSignatures(clazz){
 //     console.warn(`[*] hook_monitor_printSignatures is injected!`);
 // };
 // hook_monitor_printSignatures();
+
+/*
+关于 打印方法签名 (Print Method Signature) 的详解
+
+Frida Hook 需要精确的重载类型 (Overload)，尤其是当方法有多个同名不同参版本时。
+这个脚本能帮你把目标类的所有方法签名都打印出来，方便复制粘贴到脚本里。
+
+两种格式：
+1. Java 格式 (`void foo(int, java.lang.String)`):
+   - 阅读方便。
+2. Smali 格式 (`foo(ILjava/lang/String;)V`):
+   - 某些底层 Hook (如 Hook 构造函数 `$init`，或者 Native Hook) 有时会用。
+   - 逆向工具 (如 Jadx, IDA) 里显示的通常也是这种。
+
+逆向价值：
+- 当你看到错误提示 `Error: expected a pointer, but got a number` 或者 `Error: overload not found` 时。
+- 跑一下这个脚本，把打印出来的重载签名复制到 `.overload(...)` 里即可解决。
+
+速记：
+1. Hook 报错 "overload"？用这个脚本查一下正确的签名。
+2. 这里的 `javaTypeToSmali` 函数本身也是个很好的 Smali 语法参考。
+*/

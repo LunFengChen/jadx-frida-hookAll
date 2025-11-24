@@ -58,3 +58,32 @@ function hook_monitor_system_load() {
     console.warn(`[*] hook_monitor_system_load is injected!`);
 }
 hook_monitor_system_load();
+
+/*
+关于 SO 加载 (System.loadLibrary) 的详解
+
+Java 层加载 Native 动态库 (.so) 的标准方式。
+
+核心方法：
+1. System.loadLibrary("name"):
+   - 传入库的短名称（不带前缀 lib 和后缀 .so）。
+   - 系统会自动去 `java.library.path` (通常是 `/data/app/包名/lib/arm64`) 寻找 `libname.so`。
+
+2. System.load("/path/to/libname.so"):
+   - 传入 SO 文件的绝对路径。
+   - 常用于插件化加载、热修复、或者加载解密后释放到临时目录的 SO。
+
+逆向价值：
+1. 找核心算法：
+   - 如果看到 `loadLibrary("encode")`，那加密逻辑大概率在 `libencode.so` 里。
+   - 此时可以去 IDA 里分析这个 SO。
+
+2. Hook JNI_OnLoad：
+   - SO 加载后，系统会立即调用其导出的 `JNI_OnLoad` 函数（如果存在）。
+   - 这是 Native 层的入口点，常用于动态注册 JNI 函数。
+   - 我们可以在 Hook 到 `loadLibrary` 之后，利用 Frida 的 `Module.load` 或 `Process.findModuleByName` 进一步 Hook `JNI_OnLoad`。
+
+速记：
+1. `loadLibrary` 参数是名字，`load` 参数是路径。
+2. 看到 `load("/data/user/0/.../lib.so")`，通常是动态加载（壳/插件）。
+*/

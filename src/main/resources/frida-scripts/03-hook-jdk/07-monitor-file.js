@@ -71,3 +71,34 @@ function hook_monitor_file() {
     console.warn(`[*] hook_monitor_file is injected!`);
 };
 hook_monitor_file();
+
+/*
+关于 File IO 的详解
+
+文件 IO 操作是 App 与文件系统交互的桥梁。
+
+核心类：
+1. java.io.File:
+   - 表示文件或目录的**路径名**。
+   - 构造函数 new File(path) 只是创建了一个内存对象，不代表文件一定存在。
+   - delete(), exists(), mkdirs() 等操作文件系统。
+
+2. java.io.FileInputStream (读):
+   - 打开文件读取流。
+   - 逆向重点：App 启动时读取了什么？
+     - 配置文件 (sp, xml, json)
+     - 证书文件 (cer, jks)
+     - 系统文件 (/proc/self/maps, /system/build.prop) -> 反调试/环境检测
+
+3. java.io.FileOutputStream (写):
+   - 打开文件写入流。
+   - 逆向重点：App 运行时生成了什么？
+     - 解密后的 DEX/SO (壳)
+     - 数据库文件 (db)
+     - 日志文件 (log)
+
+速记：
+1. 看到 `FileInputStream("/proc/...")`，通常是反调试或 Root 检测。
+2. 看到写入 `.dex` 或 `.jar` 或 `.so`，通常是加固壳在释放代码。
+3. 看到删除文件 `delete()`，可能是阅后即焚的逻辑。
+*/

@@ -22,12 +22,6 @@ public class HookJDK {
         ScriptLoader.loadScript(BASE_PATH + "02-monitor-stringbuilder.js")
     );
     
-    public static final ScriptEntry MONITOR_STRINGFACTORY = new ScriptEntry(
-        "Monitor StringFactory",
-        "监控StringFactory",
-        ScriptLoader.loadScript(BASE_PATH + "03-monitor-stringfactory.js")
-    );
-    
     public static final ScriptEntry MONITOR_BASE64_JAVA = new ScriptEntry(
         "Monitor Base64 (Java)",
         "监控Base64(Java)",
@@ -62,12 +56,6 @@ public class HookJDK {
         "Monitor Collections",
         "监控Collections",
         ScriptLoader.loadScript(BASE_PATH + "10-monitor-collections.js")
-    );
-    
-    public static final ScriptEntry PRINT_MAP = new ScriptEntry(
-        "Print Map",
-        "打印Map",
-        ScriptLoader.loadScript(BASE_PATH + "11-print-map.js")
     );
     
     public static final ScriptEntry MONITOR_JSON = new ScriptEntry(

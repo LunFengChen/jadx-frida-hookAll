@@ -159,3 +159,29 @@ function hook_monitor_java_base64() {
     console.warn('[*] hook_monitor_java_base64 injected');
 }
 hook_monitor_java_base64();
+
+/*
+关于 Java 标准 Base64 的详解
+
+从 Java 8 开始，JDK 终于提供了一个标准的 Base64 实现：`java.util.Base64`。
+在此之前，Android 开发通常使用 `android.util.Base64`，或者第三方的 `sun.misc.BASE64Encoder` (不推荐)。
+
+主要内部类：
+1. `java.util.Base64.Encoder`: 编码器 (byte[] -> Base64)
+   - `encode(byte[])`: 返回 byte[]
+   - `encodeToString(byte[])`: 返回 String (最常用)
+
+2. `java.util.Base64.Decoder`: 解码器 (Base64 -> byte[])
+   - `decode(byte[])`: 输入 byte[]
+   - `decode(String)`: 输入 String (最常用)
+
+逆向注意：
+- 如果 App 设置了 `minSdkVersion >= 26` (Android 8.0)，开发者可能会混用 `java.util.Base64` 和 `android.util.Base64`。
+- 很多第三方库（如 OkHttp, Retrofit 内部）可能会自带 Base64 实现，或者使用这个 Java 标准版，而不是 Android 版。
+- 所以，如果你 Hook `android.util.Base64` 没抓到数据，一定要试试这个！
+
+速记：
+1. 这是纯 Java 的 Base64，跟 Android 无关。
+2. 高版本 Android APP 或者用了大量 Java 第三方库的 APP，经常用这个。
+3. 它的 API 风格是 `getEncoder().encodeToString()`，不同于 Android 的 `Base64.encodeToString()` 静态方法。
+*/

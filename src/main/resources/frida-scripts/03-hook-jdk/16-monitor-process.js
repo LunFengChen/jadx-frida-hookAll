@@ -49,3 +49,32 @@ function hook_monitor_process() {
     console.warn(`[*] hook_monitor_process is injected!`);
 }
 hook_monitor_process();
+
+/*
+关于 命令执行 (Runtime.exec/ProcessBuilder) 的详解
+
+在 Android 中，Java 层执行 Shell 命令主要通过 `Runtime.getRuntime().exec()` 或 `new ProcessBuilder().start()`。
+
+底层原理：
+最终都会调用 native 层的 `forkAndExec` (在 Android 7.0+ 可能是 `java.lang.ProcessManager` 或 `java.lang.UNIXProcess`)。
+
+逆向价值：
+1. Root 检测：
+   - App 经常尝试执行 `su` 来判断是否有 Root 权限。
+   - 或者执行 `ls /data` 看是否有权限。
+
+2. 环境检测：
+   - `getprop ro.debuggable`
+   - `ps` 查看正在运行的进程 (检测 frida-server)。
+   - `mount` 查看挂载点 (检测 Magisk)。
+
+3. 业务功能：
+   - `ping` 网络诊断。
+   - `logcat` 收集日志。
+   - `am start` 启动其他组件。
+
+速记：
+1. 看到 `su`，就是在查 Root。
+2. 看到 `ps` 或 `mount`，就是在查环境。
+3. Hook 这里可以直接修改命令，比如把 `su` 改成 `id`，从而绕过 Root 检测（让 App 以为执行成功但没拿到 root 权限，或者执行失败）。
+*/

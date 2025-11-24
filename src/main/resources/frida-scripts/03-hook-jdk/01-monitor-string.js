@@ -297,3 +297,41 @@ function hook_monitor_String() {
     console.warn(`[*] hook_monitor_String is injected!`);
 };
 hook_monitor_String();
+
+/*
+关于 Java String 的详解
+
+String 是 Java 中最基础但也最特殊的引用类型。
+
+核心特性：
+1. 不可变性 (Immutable)：
+   - String 对象一旦创建，其内容就不能改变。
+   - 任何修改操作（如 substring, replace, +）都会创建新的 String 对象。
+   - 优点：线程安全，适合作为 Map 的 Key，适合缓存 hash 值。
+
+2. 字符串常量池 (String Pool)：
+   - 为了节省内存，JVM 维护了一个字符串池。
+   - 字面量赋值 String s = "abc" 会优先从池中获取。
+   - new String("abc") 会强制在堆中创建新对象（但内部字符数组可能共享）。
+
+常见相关类：
+
+类名                可变性      线程安全        适用场景
+String              不可变      安全            少量字符串操作，常量，Map Key
+StringBuilder       可变        不安全          单线程大量拼接（性能最高）
+StringBuffer        可变        安全            多线程大量拼接（有锁，性能略低）
+
+逆向中的常见编码：
+
+编码名称        字节数/字符     说明
+UTF-8           1~4 byte       互联网通用标准，英文1字节，中文3字节。
+GBK             2 byte         中文 Windows 默认，中文2字节。
+ISO-8859-1      1 byte         单字节编码，不支持中文（强行转会乱码或丢失）。
+UTF-16          2/4 byte       Java 内存中的默认编码 (char)。
+
+速记：
+1. Hook String 构造函数可以看到很多隐蔽的字符串创建过程（如解密后的字节转字符串）。
+2. 所有的 + 操作符，编译器底层都会优化成 StringBuilder.append()。
+3. 看到 new String(bytes, "UTF-8") 是最常见的二进制转文本操作。
+4. 如果看到乱码，尝试换一种编码方式解读（GBK 或 ISO-8859-1）。
+*/

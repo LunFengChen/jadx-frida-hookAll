@@ -64,3 +64,26 @@ Java.perform(function() {
     
     console.warn("[*] hook_monitor_SharedPreferences is injected");
 });
+
+/*
+关于 Android 存储 (SP & Provider) 的详解
+
+这个脚本同时监控了两种数据存储/共享方式：
+
+1. SharedPreferencesImpl (SP):
+   - 這是 Android 框架层的实现类 `android.app.SharedPreferencesImpl$EditorImpl`。
+   - 不同于 JDK 版脚本 Hook 接口，这里直接 Hook 了实现类，能抓到更底层的调用。
+   - 逆向价值：抓取 Token、修改功能开关（见 JDK 版详解）。
+
+2. ContentResolver (内容解析器):
+   - Android 四大组件之一 ContentProvider 的客户端。
+   - 用途：App 内部或 App 之间共享数据（如读取通讯录、短信、相册）。
+   - 逆向价值：
+     - 监控 App 读取了哪些隐私数据（通讯录、短信验证码）。
+     - 监控跨进程通信 (IPC) 的数据流动。
+     - 某些加固壳会利用 Provider 来传递解密后的 Dex 或配置。
+
+速记：
+1. 看到 `content://` 开头的 URI，就是在用 ContentResolver。
+2. Hook 这里可以监控到 App 对隐私数据的觊觎。
+*/

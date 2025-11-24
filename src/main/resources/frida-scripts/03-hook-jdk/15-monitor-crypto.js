@@ -168,3 +168,39 @@ function hook_monitor_crypto() {
     console.warn(`[*] hook_monitor_crypto is injected!`);
 }
 hook_monitor_crypto();
+
+/*
+关于 Java 加密架构 (JCA) 的详解
+
+Java 提供了一套统一的加密接口，位于 `java.security` 和 `javax.crypto` 包中。
+无论底层是用 OpenSSL 还是其他库实现，上层 API 几乎都是一样的。
+
+核心类与逆向价值：
+
+1. MessageDigest (摘要/哈希):
+   - 算法：MD5, SHA-1, SHA-256, SHA-512。
+   - 特征：不可逆，通常用于签名生成、密码存储。
+   - Hook点：`update(input)` 看原文，`digest()` 看结果。
+
+2. Mac (消息认证码):
+   - 算法：HmacSHA1, HmacSHA256。
+   - 特征：带密钥的哈希。
+   - Hook点：`init(key)` 拿密钥！`doFinal(input)` 看原文和签名。
+
+3. Cipher (加解密):
+   - 算法：AES, DES, RSA。
+   - 特征：可逆。
+   - Hook点：
+     - `init(mode, key, iv)`: 拿密钥 (Key) 和 偏移量 (IV)！这是破解加密最关键的一步。
+     - `doFinal(input)`: 看加密前的明文或解密后的明文。
+
+4. Signature (数字签名):
+   - 算法：SHA256withRSA, MD5withRSA。
+   - 特征：非对称加密，私钥签名，公钥验签。
+   - Hook点：`sign()`。
+
+速记：
+1. 只要是标准的 Java 加密，Hook 这几个类绝对能抓到。
+2. `Cipher.init` 是获取 AES Key/IV 的神器。
+3. 看到乱码？那是加密后的 bytes。看到 hex 字符串？那是转 hex 后的结果。
+*/

@@ -16,6 +16,12 @@ public class HookAndroid {
         ScriptLoader.loadScript(BASE_PATH + "01-monitor-base64-android.js")
     );
     
+    public static final ScriptEntry MONITOR_STRINGFACTORY = new ScriptEntry(
+        "Monitor StringFactory",
+        "监控StringFactory",
+        ScriptLoader.loadScript(BASE_PATH + "03-monitor-stringfactory.js")
+    );
+    
     public static final ScriptEntry MONITOR_ACTIVITY = new ScriptEntry(
         "Monitor Activity",
         "监控Activity",
