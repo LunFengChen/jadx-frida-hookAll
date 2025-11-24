@@ -1,4 +1,4 @@
-// 功能：打印函数的所有参数及其类型
+// 功能：打印函数的所有参数的准确类型
 function showMethodArgs(args) {
     for (var i = 0; i < args.length; i++) {
         console.log("  arg[" + i + "]: " + args[i]);

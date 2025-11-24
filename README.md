@@ -11,23 +11,29 @@
 
 ## 1. 脚本分类
 
-插件提供 **7 大分类**，共 **36 个**常用 Frida Hook 脚本：
+插件提供 **8 大分类**，共 **41+ 个**常用 Frida Hook 脚本：
 
 | 分类 | 英文名称 | 中文名称 | 脚本数 | 说明 |
 |------|---------|---------|--------|------|
-| 1️⃣ | **Frida Basics** | Frida基本使用 | 1 | Hook示例和基础用法 |
+| 1️⃣ | **Frida Basics** | Frida基本使用 | 6 | Hook普通方法、重载、构造函数、字段等 |
 | 2️⃣ | **Helper Functions** | 辅助函数 | 7 | 打印堆栈、参数、Map等工具函数 |
 | 3️⃣ | **Hook JDK** | Hook JDK | 11 | 监控String、Base64、File等JDK类 |
 | 4️⃣ | **Hook Android** | Hook Android | 10 | 监控Activity、Dialog、Toast等 |
 | 5️⃣ | **Hook Third-Party** | Hook第三方库 | 2 | 监控OkHttp、JSONObject等 |
 | 6️⃣ | **Hook JNI** | JNI相关 | - | JNI函数和Native方法hook |
-| 7️⃣ | **Frida Advanced** | Frida进阶 | 4 | ClassLoader、动态加载DEX等 |
+| 7️⃣ | **Frida Advanced Api** | Frida进阶API | 4 | ClassLoader、动态加载DEX等 |
+| 8️⃣ | **Bypass Check** | 绕过各种检测 | - | 各种检测的绕过脚本或者片段等 |
 
 <details>
 <summary>📋 点击查看详细脚本列表</summary>
 
 ### 1️⃣ Frida Basics（Frida基本使用）
-- Hook示例
+- Hook普通方法
+- Hook重载方法
+- Hook构造函数
+- Hook字段
+- Hook内部类
+- 枚举类和方法
 
 ### 2️⃣ Helper Functions（辅助函数）
 - 打印调用栈
@@ -75,6 +81,9 @@
 - ClassLoader辅助
 - Dump证书
 - 动态加载DEX
+
+### 8️⃣ Bypass Check（绕过检测）
+> 此分类为预留分类，可添加绕过Root检测、模拟器检测、SSL Pinning等脚本
 
 </details>
 
@@ -243,24 +252,33 @@ chmod +x compile.sh
 src/main/
 ├── java/com/frida/jadx/
 │   ├── JadxFridaHookAll.java      # 插件入口
-│   ├── FridaScriptDialog.java     # UI 对话框
-│   ├── PluginConfig.java          # 配置管理
+│   ├── FridaScriptDialog.java     # UI 对话框（树形展示、双语、复制）
+│   ├── FridaTemplates.java        # 脚本模板基类
+│   ├── PluginConfig.java          # 配置管理（语言设置）
 │   └── templates/
-│       ├── HelperFunctions.java   # 辅助函数
-│       ├── HookJDK.java
-│       ├── HookAndroid.java
-│       └── FridaAdvanced.java
+│       ├── FridaBasics.java       # 1. Frida基本使用
+│       ├── HelperFunctions.java   # 2. 辅助函数
+│       ├── HookJDK.java           # 3. Hook JDK
+│       ├── HookAndroid.java       # 4. Hook Android
+│       ├── HookThirdParty.java    # 5. Hook第三方库
+│       ├── HookJNI.java           # 6. JNI相关
+│       ├── FridaAdvanced.java     # 7. Frida进阶
+│       ├── BypassCheck.java       # 8. 绕过检测
+│       └── ScriptLoader.java      # 脚本加载器
 └── resources/frida-scripts/
-    ├── helpers/
-    ├── hook-jdk/
-    ├── hook-android/
-    └── frida-advanced/
+    ├── 01-frida-basics/          # Frida基本使用
+    ├── 02-helper-functions/      # 辅助函数
+    ├── 03-hook-jdk/             # Hook JDK
+    ├── 04-hook-android/         # Hook Android
+    ├── 05-hook-third-party/     # Hook第三方库
+    ├── 06-hook-jni/             # JNI相关（待填充）
+    ├── 07-frida-advanced/       # Frida进阶
+    └── 08-bypass-check/         # 绕过检测（待填充）
 ```
 
 ### 5.4 发布新版本
 
 #### 自动发布
-
 本项目使用 GitHub Actions 自动发布，只需推送 tag：
 
 ```bash

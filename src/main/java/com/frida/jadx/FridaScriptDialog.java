@@ -119,7 +119,7 @@ public class FridaScriptDialog extends JDialog {
     }
 
     /**
-     * Load script templates (7 categories)
+     * Load script templates (8 categories)
      */
     private void loadScriptTemplates() {
         logger.info("Loading Frida script templates...");
@@ -128,7 +128,12 @@ public class FridaScriptDialog extends JDialog {
         // Category 1: Frida Basics
         String basicsTitle = isEnglish ? "1. Frida Basics" : "1. Frida基本使用";
         DefaultMutableTreeNode basicsNode = new DefaultMutableTreeNode(basicsTitle);
-        basicsNode.add(createScriptNode(FridaBasics.HOOK_EXAMPLES, 0));
+        basicsNode.add(createScriptNode(FridaBasics.HOOK_BASIC, 0));
+        basicsNode.add(createScriptNode(FridaBasics.HOOK_OVERLOAD, 1));
+        basicsNode.add(createScriptNode(FridaBasics.HOOK_CONSTRUCTOR, 2));
+        basicsNode.add(createScriptNode(FridaBasics.HOOK_FIELD, 3));
+        basicsNode.add(createScriptNode(FridaBasics.HOOK_INNER_CLASS, 4));
+        basicsNode.add(createScriptNode(FridaBasics.ENUMERATE_CLASSES, 5));
         rootNode.add(basicsNode);
         logger.debug("Loaded {} Frida Basics scripts", basicsNode.getChildCount());
         
@@ -203,6 +208,14 @@ public class FridaScriptDialog extends JDialog {
         fridaNode.add(createScriptNode(FridaAdvanced.LOAD_DEX, 3));
         rootNode.add(fridaNode);
         logger.debug("Loaded {} Frida Advanced scripts", fridaNode.getChildCount());
+        
+        // Category 8: Bypass Check
+        String bypassTitle = isEnglish ? "8. Bypass Check" : "8. 绕过检测";
+        DefaultMutableTreeNode bypassNode = new DefaultMutableTreeNode(bypassTitle);
+        // TODO: Add bypass scripts here when available
+        // bypassNode.add(createScriptNode(BypassCheck.YOUR_SCRIPT, 0));
+        rootNode.add(bypassNode);
+        logger.debug("Loaded {} Bypass Check scripts", bypassNode.getChildCount());
 
         // Refresh tree
         DefaultTreeModel model = (DefaultTreeModel) scriptTree.getModel();
@@ -211,7 +224,7 @@ public class FridaScriptDialog extends JDialog {
         // Expand all nodes by default
         expandAllNodes(scriptTree, 0, scriptTree.getRowCount());
         
-        logger.info("Script templates loaded successfully. Total categories: 7");
+        logger.info("Script templates loaded successfully. Total categories: 8");
     }
 
     /**

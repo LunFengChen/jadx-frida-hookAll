@@ -1,4 +1,4 @@
-// 功能：打印 Java Map 对象
+// 功能：打印 Java 的各种 Map 对象
 
 // 方法1(推荐): 遍历 Map 并打印内容
 function showJavaMap(map, mapName) {
@@ -37,6 +37,7 @@ function iterateMap(map) {
 }
 
 // 方法3: 使用 Gson 打印 Map (需要先加载 r0gson.dex)
+// 下载见r0ysue博客: http://github.com/r0ysue/AndroidSecurityStudy/blob/master/FRIDA/r0gson.dex.zip
 // 使用前需要执行: adb push r0gson.dex /data/local/tmp/r0gson.dex
 function mapToJson(map) {
     Java.openClassFile("/data/local/tmp/r0gson.dex").load();

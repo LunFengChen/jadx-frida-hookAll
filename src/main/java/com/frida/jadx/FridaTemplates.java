@@ -3,7 +3,7 @@ package com.frida.jadx;
 /**
  * Frida Hook Script Library
  * 
- * This is the main entry point that organizes scripts into 7 categories:
+ * This is the main entry point that organizes scripts into 8 categories:
  * 1. Frida Basics - Basic Frida usage examples
  * 2. Helper Functions - Utility functions
  * 3. Hook JDK - Java standard library hooks
@@ -11,6 +11,7 @@ package com.frida.jadx;
  * 5. Hook Third-Party - Third-party library hooks
  * 6. Hook JNI - JNI and native method hooks
  * 7. Frida Advanced - Advanced Frida features
+ * 8. Bypass Check - Bypass various security checks and detections
  * 
  * Scripts are loaded from .js files in resources/frida-scripts/
  */

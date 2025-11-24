@@ -1,9 +1,12 @@
 // 功能：打印字符串数组 String[]
-function showStringArray(strObj){
-    var JDKClass_Array = Java.use("java.lang.reflect.Array");
-    console.log("String Array, length=" + JDKClass_Array.getLength(strObj));
-    for (let i=0; i< JDKClass_Array.getLength(strObj); i++){
-        console.log("  [" + i + "]: " + JDKClass_Array.get(strObj, i));
+function showStringArray(strArr) {
+    if (strArr == null) return;
+    var JavaClass_Array = Java.use('java.lang.reflect.Array');
+    var length = JavaClass_Array.getLength(strArr);
+    console.log('String array length: ' + length);
+    for (let i = 0; i < length; i++) {
+        var item = JavaClass_Array.get(strArr, i);
+        console.log('  [' + i + '] = ' + (item != null ? item.toString() : 'null'));
     }
 }
 
