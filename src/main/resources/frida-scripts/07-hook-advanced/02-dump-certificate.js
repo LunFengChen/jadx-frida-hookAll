@@ -1,121 +1,68 @@
 // Dump SSL certificate from KeyStore
 // Java层证书自吐
 function hook_cert() {
-    function write_cert(inputStream, filename) {
+    // 简化版：直接使用 Java 流复制工具
+    function saveCert(data, filename) {
         try {
-            // 直接保存到 /sdcard/Download/ 目录
-            const fullPath = `/sdcard/Download/${filename}`;
-            
-            const File = Java.use("java.io.File");
+            const path = `/sdcard/Download/${filename}`;
             const FileOutputStream = Java.use("java.io.FileOutputStream");
-            
-            const file = File.$new(fullPath);
-            const out = FileOutputStream.$new(file);
-            
-            // 完全正确的读取方法 - 使用三个参数的重载
-            const buffer = Java.array('byte', Array(4096).fill(0));
-            let totalBytes = 0;
-            
-            let read;
-            while (true) {
-                try {
-                    // 使用三个参数的重载: read(byte[] b, int off, int len)
-                    read = inputStream.read.overload('[B', 'int', 'int').call(
-                        inputStream, buffer, 0, buffer.length
-                    );
-                    
-                    if (read === -1) break;
-                    
-                    out.write(buffer, 0, read);
-                    totalBytes += read;
-                } catch (e) {
-                    console.error(`[-] 读取过程中出错: ${e}`);
-                    break;
-                }
-            }
-            
-            out.flush();
-            out.close();
-            console.warn(`[+] 证书保存成功! 大小: ${totalBytes}字节, 路径: ${fullPath}`);
-            return fullPath;
+            const fos = FileOutputStream.$new(path);
+            fos.write(data);
+            fos.close();
+            console.warn(`[+] 证书已保存: ${path} (${data.length} 字节)`);
+            return path;
         } catch (e) {
-            console.error(`[-] 证书保存失败: ${e}`);
+            console.error(`[-] 保存失败: ${e}`);
             return null;
         }
+    }
+    
+    // 读取输入流到字节数组
+    function readStream(inputStream) {
+        const ByteArrayOutputStream = Java.use("java.io.ByteArrayOutputStream");
+        const baos = ByteArrayOutputStream.$new();
+        const buffer = Java.array('byte', Array(8192).fill(0));
+        let len;
+        while ((len = inputStream.read(buffer)) !== -1) {
+            baos.write(buffer, 0, len);
+        }
+        return baos.toByteArray();
     }
 
     Java.perform(function () {
         const KeyStore = Java.use("java.security.KeyStore");
         
         KeyStore.load.overload('java.io.InputStream', '[C').implementation = function (inputStream, pwd) {
-            // 1. 处理null输入流的情况
             if (inputStream === null) {
-                console.warn("[!] 输入流为null，跳过证书导出");
                 return this.load(inputStream, pwd);
             }
             
-            // 2. 先获取证书类型
-            const certType = this.getType().toLowerCase();
-            
-            // 3. 复制输入流（解决单次读取问题）
-            const ByteArrayOutputStream = Java.use("java.io.ByteArrayOutputStream");
-            const bos = ByteArrayOutputStream.$new();
-            
-            // 使用三个参数的重载进行读取
-            const buffer = Java.array('byte', Array(4096).fill(0));
-            
             try {
-                let bytesRead;
-                while (true) {
-                    // 使用三个参数的重载: read(byte[] b, int off, int len)
-                    bytesRead = inputStream.read.overload('[B', 'int', 'int').call(
-                        inputStream, buffer, 0, buffer.length
-                    );
-                    
-                    if (bytesRead === -1) break;
-                    
-                    bos.write(buffer, 0, bytesRead);
-                }
-                bos.flush();
+                // 获取证书类型和密码
+                const certType = this.getType().toLowerCase();
+                const password = pwd ? Java.use("java.lang.String").$new(pwd) : "null";
+                
+                // 读取证书数据
+                const certData = readStream(inputStream);
+                
+                // 保存证书
+                const extMap = {"pkcs12": ".p12", "bks": ".bks", "jks": ".jks", "jceks": ".jceks"};
+                const ext = extMap[certType] || ".cer";
+                const filename = `cert_${Date.now()}${ext}`;
+                saveCert(certData, filename);
+                
+                // 打印信息
+                console.log(`\n[*] 证书类型: ${certType}`);
+                console.log(`[*] 证书密码: ${password}`);
+                
+                // 用新流继续加载
+                const ByteArrayInputStream = Java.use("java.io.ByteArrayInputStream");
+                return this.load(ByteArrayInputStream.$new(certData), pwd);
+                
             } catch (e) {
-                console.error(`[-] 流读取错误: ${e}`);
+                console.error(`[-] Hook失败: ${e}`);
                 return this.load(inputStream, pwd);
             }
-            
-            const certData = bos.toByteArray();
-            const origStream = Java.use("java.io.ByteArrayInputStream").$new(certData);
-            const copyStream = Java.use("java.io.ByteArrayInputStream").$new(certData);
-            
-            // 4. 保存证书文件
-            const extensions = {
-                "pkcs12": ".p12",
-                "bks": ".bks",
-                "jks": ".jks",
-                "jceks": ".jceks",
-                "uber": ".ubr"
-            };
-            
-            const ext = extensions[certType] || ".cer";
-            const filename = `cert_${Date.now()}${ext}`;
-            const savedPath = write_cert(copyStream, filename);
-            
-            // 5. 打印关键信息
-            console.log("\n=================================");
-            console.log(`[*] 证书类型: ${certType}`);
-            console.log(`[*] 证书密码: ${Java.use("java.lang.String").$new(pwd)}`);
-            if (savedPath) console.log(`[*] 存储路径: ${savedPath}`);
-            
-            // 6. 打印堆栈（定位证书来源）
-            try {
-                console.log(Java.use("android.util.Log").getStackTraceString(
-                    Java.use("java.lang.Throwable").$new()
-                ));
-            } catch (e) {
-                console.log(`[-] 堆栈打印失败: ${e}`);
-            }
-            
-            // 7. 用原始流继续执行加载操作
-            return this.load(origStream, pwd);
         };
     });
 }
