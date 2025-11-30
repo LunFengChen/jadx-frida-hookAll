@@ -46,7 +46,7 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "✓ 编译成功!" -ForegroundColor Green
     Write-Host "========================================" -ForegroundColor Cyan
     
-    $jarFile = Get-Item ".\target\jadx-frida-hookall-1.0.1.jar"
+    $jarFile = Get-Item ".\target\jadx-frida-hookall-1.0.3.jar"
     Write-Host "`n生成的插件文件:" -ForegroundColor Yellow
     Write-Host "  路径: $($jarFile.FullName)" -ForegroundColor White
     Write-Host "  大小: $([math]::Round($jarFile.Length / 1KB, 2)) KB" -ForegroundColor Gray

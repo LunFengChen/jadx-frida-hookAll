@@ -75,7 +75,7 @@ if [ $? -eq 0 ]; then
     echo "========================================"
     echo ""
     echo "生成的插件文件:"
-    JAR_FILE="target/jadx-frida-hookall-1.0.1.jar"
+    JAR_FILE="target/jadx-frida-hookall-1.0.3.jar"
     if [ -f "$JAR_FILE" ]; then
         SIZE=$(du -h "$JAR_FILE" | cut -f1)
         echo "  路径: $(pwd)/$JAR_FILE"
