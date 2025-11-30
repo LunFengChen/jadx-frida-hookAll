@@ -67,7 +67,7 @@
  * 1. 使用 frida-spawn 模式启动（确保在 libart.so 加载前注入）：
  *    frida -U -f com.example.app -l 02-dump-dex-defineclass.js --no-pause
  * 2. 观察日志，查看 Dex 的加载顺序和时机
- * 3. Dex 文件保存路径：/data/data/[包名]/files/dump_dex_defineclass/
+ * 3. Dex 文件保存路径：/sdcard/Download/dump_dex_defineclass/
  * 
  * 【注意事项】
  * 1. 必须在 App 启动前注入（spawn 模式），否则 libart.so 已加载，Hook 会失败
@@ -198,7 +198,7 @@ function hookDefineClass() {
     
     // 初始化
     var packageName = getPackageName();
-    var outputDir = "/data/data/" + packageName + "/files/dump_dex_defineclass";
+    var outputDir = "/sdcard/Download/dump_dex_defineclass";
     mkdirRecursive(outputDir);
     
     var dexMap = {}; // 去重 Map (key: base, value: size)

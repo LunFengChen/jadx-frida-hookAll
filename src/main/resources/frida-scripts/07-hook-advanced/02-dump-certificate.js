@@ -1,31 +1,10 @@
 // Dump SSL certificate from KeyStore
 // Java层证书自吐
 function hook_cert() {
-    // 获取安全路径（兼容Android 10+）
-    function getSafePath() {
-        try {
-            const Environment = Java.use("android.os.Environment");
-            
-            // 优先使用应用私有目录（无需权限）
-            try {
-                const ctx = Java.use("android.app.ActivityThread").currentApplication();
-                return ctx.getExternalFilesDir("Download").getAbsolutePath();
-            } catch (e) {
-                // 回退到公共下载目录
-                return Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS
-                ).getAbsolutePath();
-            }
-        } catch (e) {
-            // 终极回退路径
-            return "/sdcard/Download";
-        }
-    }
-
     function write_cert(inputStream, filename) {
         try {
-            const safePath = getSafePath();
-            const fullPath = `${safePath}/${filename}`;
+            // 直接保存到 /sdcard/Download/ 目录
+            const fullPath = `/sdcard/Download/${filename}`;
             
             const File = Java.use("java.io.File");
             const FileOutputStream = Java.use("java.io.FileOutputStream");

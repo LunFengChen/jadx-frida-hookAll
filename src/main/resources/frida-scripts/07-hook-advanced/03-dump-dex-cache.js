@@ -172,7 +172,7 @@ Java.perform(function() {
         
         // 创建输出目录（带时间戳，避免覆盖）
         var timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
-        var outputDir = "/data/data/" + packageName + "/files/dump_dex_" + timestamp;
+        var outputDir = "/sdcard/Download/dump_dex_" + timestamp;
         mkdirRecursive(outputDir);
         
         var dexCount = 0;
