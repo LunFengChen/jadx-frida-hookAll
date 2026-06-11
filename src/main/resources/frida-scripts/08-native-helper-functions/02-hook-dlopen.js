@@ -4,6 +4,25 @@
  */
 
 function hook_dlopen(targetSoName) {
+    // dlopen主要是 hook native函数中加载别的so的，典型的如加固或者系统级别的so；
+    Interceptor.attach(Module.findExportByName(null, "dlopen"), {
+        onEnter: function (args) {
+            this.fileName = args[0].readCString();
+            console.log(`[+] dlopen onEnter ==> ${this.fileName}`);
+            if (!targetSoName || this.fileName.indexOf(targetSoName) >= 0) {
+                this.isMatch = true;
+            }
+        },
+        onLeave: function (retval) {
+            console.log(`[-] dlopen onLeave <== ${this.fileName}`);
+            if (this.isMatch) {
+                let address_JNI_OnLoad = Module.getExportByName(this.fileName, 'JNI_OnLoad');
+                console.warn(`[*] found JNI_OnLoad in ${this.fileName}, address is at ${address_JNI_OnLoad}`);
+            }
+        }   
+    });
+    // android_dlopen_ext，现在一般都用这个；因为system.loadlibrary/load底层就是调用这个函数的；还有native层有的也会引入这个导出函数然后调用；
+    // 详细源码分析请看: https://t.zsxq.com/BSZKj
     Interceptor.attach(Module.findExportByName(null, "android_dlopen_ext"), {
         onEnter: function (args) {
             this.fileName = args[0].readCString();
@@ -20,18 +39,6 @@ function hook_dlopen(targetSoName) {
             if (this.isMatch) {
                 let address_JNI_OnLoad = Module.getExportByName(this.fileName, 'JNI_OnLoad');
                 console.warn(`[*] found JNI_OnLoad in ${this.fileName}, address is at ${address_JNI_OnLoad}`);
-
-                // 认为目标so都有JNI_OnLoad，Hook JNI_OnLoad
-                Interceptor.attach(address_JNI_OnLoad, {
-                    onEnter: function (args) {
-                            console.log(`\t[->] ${this.fileName} JNI_OnLoad onEnter`);
-                            // 这里可以继续你的分析逻辑
-                            // 例如：inline hook、dump 内存、hook 其他函数、修改数据等
-                        },
-                    onLeave: function () {
-                        console.log(`\t[<-] ${this.fileName} JNI_OnLoad onLeave`);
-                    }
-                });
             }
         }
     });

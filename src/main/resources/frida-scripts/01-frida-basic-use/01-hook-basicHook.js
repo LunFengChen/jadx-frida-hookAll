@@ -1,3 +1,5 @@
+// java层的hook本质是利用native层的hook，感兴趣的可以阅读frida-java-bridge源码
+
 // Hook普通方法、打印参数和修改返回值 
 function hook_basicHook() { // 封装成函数方便调用和特殊情况再次hook
     Java.perform(function () {// Java.perform()确保代码在Java环境中执行

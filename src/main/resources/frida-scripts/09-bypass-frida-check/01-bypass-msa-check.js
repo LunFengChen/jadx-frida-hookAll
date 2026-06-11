@@ -12,6 +12,7 @@ function hook_dlopen() {
             if (this.fileName && this.fileName.includes("libmsaoaidsec.so")) {
                 console.warn(`[+] dlopen onEnter ==> ${this.fileName}`);
                 // 测试环境: win11/10, android12/13, rusda16.2.1(抹除一些基础特征) + 本脚本即可绕过； 如果是比较强的魔改server, 不需要本脚本；
+		        // 某些server绕不了：比如florida配合脚本依然被检测到
 
                 // 通用1: 杀入口函数(很稳定)
                 // msa是一个比较固定的sdk, 版本更迭慢, 最近的版本入口函数固定不变
@@ -126,54 +127,6 @@ function nop_func(parg2){
     writer.flush();
     writer.dispose();
     console.warn(`[!] nop ${parg2} success!`);
-}
-
-
-
-// 这段代码是残次品，用于绕其他检测的，放这里吧
-function hook_fake_pthread_create_bypass() {
-    // 保存原始的pthread_create函数
-    const pthread_create_addr = Module.findExportByName(null, "pthread_create");
-    const pthread_create = new NativeFunction(pthread_create_addr, "int", ["pointer", "pointer", "pointer", "pointer"]);
-    
-    return new NativeCallback((parg0, parg1, parg2, parg3) => {
-        const module = Process.findModuleByAddress(parg2);
-        if (!module) {
-            return pthread_create(parg0, parg1, parg2, parg3);
-        }
-        
-        const so_name = module.name;
-        const func_offset = parg2.sub(module.base).toString(16); // 转换为16进制字符串
-        
-        console.log(`[*] Thread creation attempt from ${so_name} at offset: 0x${func_offset}, arg's address: ${parg3.toString(16)}`);
-        
-        // 检查是否需要全杀这个SO的线程
-        if (threadKillRules.killAll.includes(so_name)) {
-            console.warn(`[!] Killing ALL threads from ${so_name} (global kill rule)`);
-            return 0; // 返回0表示成功创建线程，但啥也没干
-        }
-        
-        // 检查是否需要杀死特定偏移的线程
-        if (threadKillRules.specific[so_name]) {
-            // 检查是否在要杀死的特定偏移列表中
-            if (threadKillRules.specific[so_name].includes(func_offset)) {
-                console.warn(`[!] Killing specific thread from ${so_name} at offset: 0x${func_offset}`);
-                return 0; // 返回0表示成功创建线程，但啥也没干
-            }
-        }
-        
-        // 正常的线程创建, 成功是返回0
-        return pthread_create(parg0, parg1, parg2, parg3);
-    }, "int", ["pointer", "pointer", "pointer", "pointer"]);
-}
-
-
-// 线程创建
-function hook_replace_thread_create(){
-    var new_pthread_create = hook_fake_pthread_create_bypass()
-    var pthread_create_addr = Module.findExportByName(null, "pthread_create")
-    // 函数替换
-    Interceptor.replace(pthread_create_addr, new_pthread_create);
 }
 
 

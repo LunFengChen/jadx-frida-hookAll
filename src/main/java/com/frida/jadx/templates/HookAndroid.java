@@ -48,7 +48,7 @@ public class HookAndroid {
     
     public static final ScriptEntry MONITOR_WEBVIEW = new ScriptEntry(
         "Monitor WebView",
-        "监控WebView",
+        "监控WebView并开调试权限",
         ScriptLoader.loadScript(BASE_PATH + "07-monitor-webview.js")
     );
     

@@ -101,6 +101,23 @@ function hook_monitor_okhttp3() {
 
 hook_monitor_okhttp3();
 
+// 下面代码来自季冬公众号
+function hook_http(){
+    Java.perform(() => {
+        var ins_okhttp = Java.use("okhttp3.OkHttpClient")        
+        ins_okhttp.newCall.overload('okhttp3.Request').implementation = function(a) {
+            console.log(a);           
+            return this.newCall(a);        
+        }
+        var ins_RealCall = Java.use("okhttp3.RealCall");        
+        ins_RealCall.execute.overload().implementation = function() {           
+            var ret = this.execute();           
+            console.log(ret.toString())           
+            return ret        
+        }    
+    })
+}
+
 /*
 关于 OkHttp3 抓包的详解
 
